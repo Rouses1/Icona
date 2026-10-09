@@ -33,8 +33,31 @@ jobs:
         run: |
           SETTINGS="${{ steps.proj.outputs.dir }}/settings.gradle"
           sed -i 's/FAIL_ON_PROJECT_REPOS/PREFER_SETTINGS/g' "$SETTINGS"
-          echo "--- settings.gradle after fix ---"
-          cat "$SETTINGS"
+
+      - name: Create missing drawables
+        run: |
+          DRAWABLE="${{ steps.proj.outputs.dir }}/app/src/main/res/drawable"
+          mkdir -p "$DRAWABLE"
+          cat > "$DRAWABLE/toggle_button.xml" << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <selector xmlns:android="http://schemas.android.com/apk/res/android">
+              <item android:state_checked="true">
+                  <shape android:shape="rectangle">
+                      <corners android:radius="4dp"/>
+                      <solid android:color="#00cc00"/>
+                      <stroke android:width="1dp" android:color="#009900"/>
+                  </shape>
+              </item>
+              <item>
+                  <shape android:shape="rectangle">
+                      <corners android:radius="4dp"/>
+                      <solid android:color="#444444"/>
+                      <stroke android:width="1dp" android:color="#222222"/>
+                  </shape>
+              </item>
+          </selector>
+          EOF
+          echo "Created toggle_button.xml"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
