@@ -29,6 +29,13 @@ jobs:
           echo "dir=$d" >> "$GITHUB_OUTPUT"
           echo "Project dir: $d"
 
+      - name: Fix repository mode conflict
+        run: |
+          SETTINGS="${{ steps.proj.outputs.dir }}/settings.gradle"
+          sed -i 's/FAIL_ON_PROJECT_REPOS/PREFER_SETTINGS/g' "$SETTINGS"
+          echo "--- settings.gradle after fix ---"
+          cat "$SETTINGS"
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -56,4 +63,3 @@ jobs:
         with:
           name: apk
           path: ${{ steps.proj.outputs.dir }}/app/build/outputs/apk/**/*.apk
-          
